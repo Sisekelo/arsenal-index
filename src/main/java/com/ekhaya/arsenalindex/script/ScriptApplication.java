@@ -1,10 +1,15 @@
 package com.ekhaya.arsenalindex.script;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Random;
 
@@ -39,10 +44,21 @@ public class ScriptApplication {
 	private static final List<String> BAD_STOCKS = List.of("TSLA", "AMC", "GME"); // Stocks to buy if Arsenal loses
 	private static final List<String> MEH_STOCKS = List.of("INTC", "CSCO", "IBM"); // Stocks to buy if Arsenal draws
 
+	private static final String USED_MATCHES_FILE = System.getProperty("user.home") + "/used_matches.txt";
 	public static void main(String[] args) {
 		try {
+			// Ensure the file exists
+			ensureFileExists();
+
+
 			String result = getArsenalResult();
 			System.out.println("Arsenal's latest result: " + result);
+
+			if(result == null) {
+				System.out.println("Getting match issue.");	
+				return;
+			}
+
 
 			String stock = selectStock(result);
 			System.out.println("Selected stock to buy: " + stock);
@@ -71,8 +87,27 @@ public class ScriptApplication {
 		JSONArray matches = jsonResponse.getJSONArray("matches");
 
 		if (matches.length() == 0) {
-			return "draw"; // Default to draw if no matches found
+			return null; // Default to draw if no matches found
 		}
+
+		String matchId = String.valueOf(matches.getJSONObject(0).getInt("id"));
+
+		List<String> usedMatches = Files.readAllLines(Paths.get(USED_MATCHES_FILE));
+
+		// Check if the match has been used
+        if (usedMatches.contains(matchId)) {
+
+			System.out.println("Match already used.");
+			return null; 
+            
+        }
+
+		System.out.println("Match not used yet. Writing to note pad");
+		try (BufferedWriter writer = new BufferedWriter(new FileWriter(USED_MATCHES_FILE, true))) {
+            writer.write(matchId);
+            writer.newLine();
+        }
+
 
 		// Get the latest match
 		JSONObject latestMatch = matches.getJSONObject(0);
@@ -103,7 +138,7 @@ public class ScriptApplication {
 	// Function to buy stock using Alpaca API
 	private static void buyStock(String stockSymbol) throws IOException, InterruptedException {
 		HttpClient client = HttpClient.newHttpClient();
-		StockOrder order = new StockOrder(stockSymbol);
+		StockOrder order = new StockOrder(stockSymbol, 15.0);
 
 		HttpRequest request = HttpRequest.newBuilder()
 				.uri(URI.create(ALPACA_API_URL))
@@ -123,4 +158,11 @@ public class ScriptApplication {
 		}
 	}
 
+	private static void ensureFileExists() throws IOException {
+		Path filePath = Paths.get(USED_MATCHES_FILE);
+		if (!Files.exists(filePath)) {
+			Files.createFile(filePath);
+			System.out.println("Created file: " + USED_MATCHES_FILE);
+    }
+}
 }

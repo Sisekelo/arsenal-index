@@ -2,14 +2,14 @@ package com.ekhaya.arsenalindex.model;
 
 public class StockOrder {
     private final String symbol;
-    private final int quantity;
+    private final double notional;
     private final String side;
     private final String type;
     private final String timeInForce;
 
-    public StockOrder(String symbol) {
+    public StockOrder(String symbol, double notional) {
         this.symbol = symbol;
-        this.quantity = 1;
+        this.notional = notional;
         this.side = "buy";
         this.type = "market";
         this.timeInForce = "day";
@@ -19,11 +19,11 @@ public class StockOrder {
         return String.format("""
                 {
                     "symbol": "%s",
-                    "qty": %d,
+                    "notional": %.2f,
                     "side": "%s",
                     "type": "%s",
                     "time_in_force": "%s"
                 }
-                """, symbol, quantity, side, type, timeInForce);
+                """, symbol, notional, side, type, timeInForce);
     }
-} 
+}

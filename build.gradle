@@ -1,5 +1,0 @@
-dependencies {
-    implementation 'org.json:json:20240303'
-    compileOnly 'org.projectlombok:lombok:1.18.30'
-    annotationProcessor 'org.projectlombok:lombok:1.18.30'
-} 
