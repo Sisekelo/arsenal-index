@@ -31,13 +31,13 @@ public class ScriptApplication {
 
 	// Environment variables
 	private static final String FOOTBALL_API_KEY = dotenv.get("FOOTBALL_API_KEY");
-	private static final String ALPACA_API_KEY = dotenv.get("ALPACA_API_KEY");
-	private static final String ALPACA_SECRET_KEY = dotenv.get("ALPACA_SECRET_KEY");
+	private static final String ALPACA_API_KEY = dotenv.get("APCA-API-KEY-ID");
+	private static final String ALPACA_SECRET_KEY = dotenv.get("APCA-API-SECRET-KEY");
 
 	// API URLs
 	private static final String FOOTBALL_API_URL = "https://api.football-data.org/v4/teams/57/matches?status=FINISHED&limit=1"; // Arsenal's
 	// team ID
-	private static final String ALPACA_API_URL = "https://paper-api.alpaca.markets/v2/orders";
+	private static final String ALPACA_API_URL = "https://api.alpaca.markets/v2/orders";
 
 	// Stock lists
 	private static final List<String> GOOD_STOCKS = List.of("AAPL", "MSFT", "NVDA"); // Stocks to buy if Arsenal wins
